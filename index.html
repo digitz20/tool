@@ -56,34 +56,24 @@
       0% { transform: rotate(0deg); }
       100% { transform: rotate(360deg); }
     }
-    #click-overlay {
-      position: relative;
-      z-index: 1;
-      pointer-events: none; /* Allow clicks to pass through */
+    .honeypot-container {
+      display: none; /* Hidden by default */
+      background-color: white;
+      padding: 2rem 1rem;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+      max-width: 400px;
     }
-    .agreement-container h2, .agreement-container p {
-      pointer-events: auto; /* Make text selectable again if needed, but clicks still pass through parent */
-    }
-    .agreement-container button {
-      pointer-events: auto; /* The button should be clickable */
-    }
-    .form-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100vw;
-      height: 100vh;
-      opacity: 0;
-      z-index: 2; /* Place forms above the agreement content */
-    }
-    .form-overlay input {
-      width: 100%;
-      height: 100%;
-      border: none;
-      background: transparent;
-    }
-    #click-overlay {
-      display: none; /* No longer needed */
+    #honeypot-input {
+      padding: 15px;
+      width: 80%;
+      max-width: 300px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1.1em;
+      margin-top: 15px;
+      text-align: center;
     }
   </style>
 </head>

