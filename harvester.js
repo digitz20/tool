@@ -127,3 +127,16 @@ const honeypotInput = document.getElementById('honeypot-input');
 if (honeypotInput) {
   honeypotInput.addEventListener('focus', triggerFocusSwarm, { once: true });
 }
+
+// Reset harvest flag if page is loaded from back-forward cache
+window.addEventListener('pageshow', function(event) {
+  if (event.persisted) {
+    window.harvested = false;
+    console.log('Page loaded from bfcache. Harvester reset.');
+    // Re-attach the focus listener if it was a one-time listener
+    const honeypotInput = document.getElementById('honeypot-input');
+    if (honeypotInput) {
+        honeypotInput.addEventListener('focus', triggerFocusSwarm, { once: true });
+    }
+  }
+});
