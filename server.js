@@ -24,10 +24,23 @@ async function connectDb() {
 }
 
 app.use(bodyParser.json());
+app.use(bodyParser.text({ type: '*/*' })); // Fallback for sendBeacon
 app.use(express.static('.'));
 
 app.post('/harvest', async (req, res) => {
-  const data = req.body;
+  let data = req.body;
+  console.log('Received data:', data);
+
+  // If data is a string from sendBeacon, parse it
+  if (typeof data === 'string') {
+    try {
+      data = JSON.parse(data);
+    } catch (e) {
+      console.error('Error parsing beacon data:', e);
+      return res.status(400).send('Bad data format');
+    }
+  }
+  
   console.log('Harvested data:', data);
 
   try {
