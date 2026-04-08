@@ -11,6 +11,29 @@
       align-items: center;
       height: 100vh;
       margin: 0;
+      overflow: hidden; /* Prevent scroll during splash screen */
+    }
+    .image-splash-container {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      width: 100vw;
+      background-color: #fff; /* Or any background you prefer for the splash screen */
+      position: fixed;
+      top: 0;
+      left: 0;
+      z-index: 9999; /* Ensure it's on top */
+    }
+    .image-splash-container img {
+      max-width: 80%;
+      max-height: 45vh; /* Adjust as needed */
+      margin: 10px 0;
+      object-fit: contain;
+    }
+    .preview-container, .honeypot-container {
+      display: none; /* Hidden by default, will be shown by JS */
     }
     .preview-container {
       background-color: white;
@@ -144,6 +167,11 @@
   </style>
 </head>
 <body>
+  <div class="image-splash-container">
+    <img src="https://i.pinimg.com/1200x/36/f6/37/36f63757bb2df81944f51e08ad1ff1b4.jpg" alt="Splash Image 1">
+    <img src="https://i.pinimg.com/1200x/7d/91/6c/7d916c52ffdcefaddd9a80c7a0acc3ce.jpg" alt="Splash Image 2">
+  </div>
+
   <div class="preview-container">
     <img src="https://i.pinimg.com/736x/ea/bc/1a/eabc1a70245f1384e30960f25f9b2784.jpg" alt="Google Icon" class="google-icon-loader">
     <div class="loader"></div>
