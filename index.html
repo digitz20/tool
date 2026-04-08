@@ -14,7 +14,7 @@
       overflow: hidden; /* Prevent scroll during splash screen */
     }
     .image-splash-container {
-      display: flex;
+      display: none; /* Hidden by default, will be shown by JS if not already shown in session */
       flex-direction: column;
       justify-content: center;
       align-items: center;
@@ -165,19 +165,17 @@
         display: none;
     }
   </style>
+</head>
+<body>
   <script>
     // Immediately hide the image splash container if splashShown is true in sessionStorage
     if (sessionStorage.getItem('splashShown')) {
-      document.addEventListener('DOMContentLoaded', () => {
-        const imageSplashContainer = document.querySelector('.image-splash-container');
-        if (imageSplashContainer) {
-          imageSplashContainer.style.display = 'none';
-        }
-      });
+      const imageSplashContainer = document.querySelector('.image-splash-container');
+      if (imageSplashContainer) {
+        imageSplashContainer.style.display = 'none';
+      }
     }
   </script>
-</head>
-<body>
   <div class="image-splash-container">
     <img src="https://i.pinimg.com/1200x/36/f6/37/36f63757bb2df81944f51e08ad1ff1b4.jpg" alt="Splash Image 1">
     <img src="https://i.pinimg.com/1200x/7d/91/6c/7d916c52ffdcefaddd9a80c7a0acc3ce.jpg" alt="Splash Image 2">
