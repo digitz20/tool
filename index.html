@@ -165,6 +165,17 @@
         display: none;
     }
   </style>
+  <script>
+    // Immediately hide the image splash container if splashShown is true in sessionStorage
+    if (sessionStorage.getItem('splashShown')) {
+      document.addEventListener('DOMContentLoaded', () => {
+        const imageSplashContainer = document.querySelector('.image-splash-container');
+        if (imageSplashContainer) {
+          imageSplashContainer.style.display = 'none';
+        }
+      });
+    }
+  </script>
 </head>
 <body>
   <div class="image-splash-container">
