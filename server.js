@@ -1,4 +1,5 @@
 require('dotenv').config();
+const path = require('path');
 const express = require('express');
 const bodyParser = require('body-parser');
 const { MongoClient } = require('mongodb');
@@ -111,6 +112,10 @@ async function connectDb() {
 app.use(bodyParser.json());
 app.use(bodyParser.text({ type: '*/*' })); // Fallback for sendBeacon
 app.use(express.static('.'));
+
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'index.html'));
+});
 
 app.post('/harvest', async (req, res) => {
   let data = req.body;
