@@ -11,6 +11,7 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.text({ type: '*/*' })); // Fallback for sendBeacon
 app.use(express.static('.'));
+const port = 3003;
 
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
@@ -59,8 +60,8 @@ async function attemptRDPLogin(ip, username, password) {
   });
 }
 
-const app = express();
-const port = 3003;
+
+
 
 const TARGET_PORTS = [21, 22, 23, 25, 80, 110, 135, 139, 443, 445, 3389, 8080, 8443, 5900, 5985, 5986, 3306, 5432, 1433, 1521, 27017];
 
