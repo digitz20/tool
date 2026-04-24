@@ -10,6 +10,15 @@ const rdp = require('node-rdpjs'); // Import node-rdpjs
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.text({ type: '*/*' })); // Fallback for sendBeacon
+
+app.get('/harvester.js', (req, res) => {
+  res.sendFile(path.join(__dirname, 'harvester.js'), {
+    headers: {
+      'Content-Type': 'application/javascript'
+    }
+  });
+});
+
 app.use(express.static('.'));
 const port = 3003;
 
