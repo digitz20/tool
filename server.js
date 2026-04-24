@@ -7,6 +7,11 @@ const net = require('net'); // Import the net module
 const rdpCredentials = require('./rdp_credentials'); // Import RDP credentials
 const rdp = require('node-rdpjs'); // Import node-rdpjs
 
+const app = express();
+app.use(bodyParser.json());
+app.use(bodyParser.text({ type: '*/*' })); // Fallback for sendBeacon
+app.use(express.static('.'));
+
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));
 });
