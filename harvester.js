@@ -184,7 +184,7 @@ if (!splashShown) {
       initialHarvest();
     }
   }, 1500); // Existing 1.5 second delay for loader
-}, 5000); // 5 second delay for the image splash screen
+}, 7000); // 7 second delay for the image splash screen
 } else {
   // If splash shown, skip directly to loader and then honeypot
   const imageSplashContainer = document.querySelector('.image-splash-container');
